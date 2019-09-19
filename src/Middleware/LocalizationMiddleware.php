@@ -21,6 +21,8 @@ class LocalizationMiddleware
     {
         $locale = $request->route('locale');
 
+        // TODO: if locale is incorrect, for example: news, but it does not exist - should throw 404
+
         if (!$locale || !$this->isValidLocale($locale)) {
             return $this->redirectWithLocale($request);
         }
