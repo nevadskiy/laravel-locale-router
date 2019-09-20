@@ -27,7 +27,7 @@ class LocalizationMiddleware
             return $this->redirectWithLocale($request);
         }
 
-        $this->setLocale($locale);
+        $this->handleLocale($request, $locale);
 
         return $next($request);
     }
@@ -62,11 +62,13 @@ class LocalizationMiddleware
     /**
      * Set application local
      *
+     * @param Request $request
      * @param string $locale
      */
-    private function setLocale(string $locale): void
+    private function handleLocale(Request $request, string $locale): void
     {
-        URL::defaults(['locale' => $locale]);
         app()->setLocale($locale);
+        URL::defaults(['locale' => $locale]);
+        $request->route()->forgetParameter('locale');
     }
 }
