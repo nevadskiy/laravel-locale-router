@@ -70,5 +70,8 @@ class LocalizationMiddleware
         app()->setLocale($locale);
         URL::defaults(['locale' => $locale]);
         $request->route()->forgetParameter('locale');
+
+        // TEMP:
+        session()->put('locale', app()->getLocale());
     }
 }
