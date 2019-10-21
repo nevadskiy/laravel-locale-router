@@ -4,7 +4,7 @@ namespace Nevadskiy\LocalizationRouter;
 
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Routing\Events\RouteMatched;
-use Route;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class LocalizationRouterServiceProvider extends ServiceProvider
