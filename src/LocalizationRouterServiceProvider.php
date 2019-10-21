@@ -77,7 +77,7 @@ class LocalizationRouterServiceProvider extends ServiceProvider
 
     /**
      * Forget the locale parameter that allows to accept only needed route parameters in controllers.
-     * E.g. Instead of 'function show($locale, $id)' we just can rid of $locale and left only $id 'function show($id)'
+     * E.g. Instead of 'function show($locale, $id)' we just can rid of $locale and left only $id 'function show($id)'.
      *
      * @param RouteMatched $event
      */
