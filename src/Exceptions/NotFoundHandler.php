@@ -4,11 +4,26 @@ namespace Nevadskiy\LocalizationRouter\Exceptions;
 
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
+use Nevadskiy\LocalizationRouter\LocaleUrl;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NotFoundHandler
 {
+    /**
+     * @var LocaleUrl
+     */
+    private $localeUrl;
+
+    /**
+     * NotFoundHandler constructor.
+     *
+     * @param LocaleUrl $localeUrl
+     */
+    public function __construct(LocaleUrl $localeUrl)
+    {
+        $this->localeUrl = $localeUrl;
+    }
+
     /**
      * Prepare exception for rendering.
      *
@@ -20,67 +35,23 @@ class NotFoundHandler
     {
         $defaultLocale = config('app.fallback_locale');
 
-        // Helps If 404 view contains any links
-        URL::defaults(['locale' => $defaultLocale]);
-
         if (! $exception instanceof NotFoundHttpException) {
             return $exception;
         }
 
-        if ($this->isCorrectRequestLocale($request)) {
+        // Helps If 404 view contains any locale links
+        url()->defaults(['locale' => $defaultLocale]);
+
+        if ($this->localeUrl->isCorrectRequestLocale($request)) {
             return $exception;
         }
 
-        $url = $this->generateUrlWithLocale($request, $defaultLocale);
+        $url = $this->localeUrl->prependLocale($defaultLocale, $request);
 
-        if (! $this->isCorrectUrl($url)) {
+        if (! $this->localeUrl->isCorrect($url)) {
             return $exception;
         }
 
-        return NotFoundByWrongLocaleException::withUrl($exception, $url);
-    }
-
-    /**
-     * Is correct request locale.
-     *
-     * @param Request $request
-     * @return bool
-     */
-    private function isCorrectRequestLocale($request): bool
-    {
-        return \in_array($request->segment(1), config('app.locales'), true);
-    }
-
-    /**
-     * Is correct URL.
-     *
-     * @param string $uri
-     * @return bool
-     */
-    private function isCorrectUrl(string $uri): bool
-    {
-        try {
-            app('router')->getRoutes()->match(Request::create($uri));
-        } catch (NotFoundHttpException $e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Generate url with correct locale.
-     *
-     * @param Request $request
-     * @param string $defaultLocale
-     * @return string
-     */
-    private function generateUrlWithLocale($request, string $defaultLocale): string
-    {
-        $path = $request->getPathInfo();
-
-        $url = url()->to("{$defaultLocale}{$path}");
-
-        return $url;
+        return NotFoundByWrongLocaleException::withUri($exception, $url);
     }
 }

@@ -12,30 +12,30 @@ class NotFoundByWrongLocaleException extends Exception
     /**
      * @var string
      */
-    private $correctUrl;
+    private $correctUri;
 
     /**
      * NotFoundByWrongLocaleException constructor.
      *
      * @param NotFoundHttpException $e
-     * @param string $correctUrl
+     * @param string $correctUri
      */
-    public function __construct(NotFoundHttpException $e, string $correctUrl)
+    public function __construct(NotFoundHttpException $e, string $correctUri)
     {
         parent::__construct($e->getMessage(), $e->getCode(), $e->getPrevious());
-        $this->correctUrl = $correctUrl;
+        $this->correctUri = $correctUri;
     }
 
     /**
      * Create the exception with url.
      *
      * @param NotFoundHttpException $e
-     * @param string $correctUrl
+     * @param string $correctUri
      * @return NotFoundByWrongLocaleException
      */
-    public static function withUrl(NotFoundHttpException $e, string $correctUrl): NotFoundByWrongLocaleException
+    public static function withUri(NotFoundHttpException $e, string $correctUri): NotFoundByWrongLocaleException
     {
-        return new static($e, $correctUrl);
+        return new static($e, $correctUri);
     }
 
     /**
@@ -45,6 +45,6 @@ class NotFoundByWrongLocaleException extends Exception
      */
     public function redirect()
     {
-        return redirect()->to($this->correctUrl, Response::HTTP_FOUND, ['Vary' => 'Accept-Language']);
+        return redirect()->to($this->correctUri, Response::HTTP_FOUND, ['Vary' => 'Accept-Language']);
     }
 }

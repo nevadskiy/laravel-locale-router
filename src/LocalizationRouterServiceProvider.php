@@ -2,13 +2,25 @@
 
 namespace Nevadskiy\LocalizationRouter;
 
-use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Foundation\Events\LocaleUpdated;
 use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Nevadskiy\LocalizationRouter\Listeners\LocaleUpdatedListener;
+use Nevadskiy\LocalizationRouter\Listeners\RouteMatchedListener;
 
 class LocalizationRouterServiceProvider extends ServiceProvider
 {
+    /**
+     * The event listener mappings for the package.
+     *
+     * @var array
+     */
+    protected $listen = [
+        LocaleUpdated::class => LocaleUpdatedListener::class,
+        RouteMatched::class => RouteMatchedListener::class,
+    ];
+
     /**
      * Boot any application services.
      *
@@ -28,10 +40,11 @@ class LocalizationRouterServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->registerRouteMacro();
+        $this->registerContainerBindings();
     }
 
     /**
-     * Boot route locale pattern.
+     * Boot the route locale pattern.
      */
     private function bootRoutePatterns(): void
     {
@@ -39,60 +52,52 @@ class LocalizationRouterServiceProvider extends ServiceProvider
     }
 
     /**
-     * Get locale pattern.
+     * Get the locale pattern.
      *
      * @return string
      */
     private function getLocalePattern(): string
     {
-        return '(' . implode('|', config('app.locales', [config('app.fallback_locale')])) . ')';
+        $default = $this->app[Repositories\Repository::class]->getDefault();
+
+        $locales = config('app.locales', [$default]);
+
+        return '(' . implode('|', $locales) . ')';
     }
 
     /**
-     * Boot route events.
+     * Boot the package events.
      */
     private function bootEvents(): void
     {
-        Route::matched(function (RouteMatched $event) {
-            $locale = $event->route->parameter('locale');
-
-            $this->app->setLocale($locale);
-
-            $this->setDefaultUrlLocale($locale);
-
-            $this->forgetLocaleParameter($event);
-        });
+        foreach ($this->listen as $event => $listener) {
+            $this->app['events']->listen($event, $listener);
+        }
     }
 
     /**
-     * Set default URL locale to allow to generate all routes without passing a locale.
-     * E.g. Instead of 'route('articles', ['locale' => app()->getLocale()])' now available just 'route('article')'.
-     *
-     * @param string $locale
-     */
-    private function setDefaultUrlLocale(string $locale = null): void
-    {
-        app(UrlGenerator::class)->defaults(['locale' => $locale ?: 'en']);
-    }
-
-    /**
-     * Forget the locale parameter that allows to accept only needed route parameters in controllers.
-     * E.g. Instead of 'function show($locale, $id)' we just can rid of $locale and left only $id 'function show($id)'.
-     *
-     * @param RouteMatched $event
-     */
-    private function forgetLocaleParameter(RouteMatched $event): void
-    {
-        $event->route->forgetParameter('locale');
-    }
-
-    /**
-     * Register route macro.
+     * Register the route macro.
      */
     private function registerRouteMacro(): void
     {
         Route::macro('locale', function ($routes) {
             Route::prefix('{locale}')->group($routes);
         });
+    }
+
+    /**
+     * Register the container bindings.
+     */
+    private function registerContainerBindings(): void
+    {
+        $this->app->when(LocaleUrl::class)
+            ->needs('$locales')
+            ->give($this->app['config']['app']['locales']);
+
+        $this->app->when(Repositories\SessionRepository::class)
+            ->needs('$defaultLocale')
+            ->give($this->app['config']['app']['fallback_locale']);
+
+        $this->app->bind(Repositories\Repository::class, Repositories\SessionRepository::class);
     }
 }

@@ -1,3 +1,11 @@
+# Features
+- SEO-friendly urls
+- Redirects for non-localed routes
+- No additional parameters inside controllers
+- Routes still can be cached
+- Default locale parameter for URL generator 
+- Correct locale validation
+
 # Installation
 
 Register the LocalizationRouterServiceProvider in the config/app.php
@@ -44,7 +52,7 @@ use Nevadskiy\LocalizationRouter\Exceptions\NotFoundHandler;
 
 public function render($request, Exception $exception)
 {
-    $exception = (new NotFoundHandler())->prepareException($request, $exception);
+    $exception = app(NotFoundHandler::class)->prepareException($request, $exception);
 
     if ($exception instanceof NotFoundByWrongLocaleException) {
         return $exception->redirect();
