@@ -2,53 +2,41 @@
 
 namespace Nevadskiy\LocalizationRouter;
 
-use Illuminate\Foundation\Events\LocaleUpdated;
-use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Nevadskiy\LocalizationRouter\Listeners\LocaleUpdatedListener;
-use Nevadskiy\LocalizationRouter\Listeners\RouteMatchedListener;
+use Nevadskiy\LocalizationRouter\Providers;
 
 class LocalizationRouterServiceProvider extends ServiceProvider
 {
     /**
-     * The event listener mappings for the package.
-     *
-     * @var array
-     */
-    protected $listen = [
-        LocaleUpdated::class => LocaleUpdatedListener::class,
-        RouteMatched::class => RouteMatchedListener::class,
-    ];
-
-    /**
-     * Boot any application services.
-     *
-     * @return void
-     */
-    public function boot(): void
-    {
-        $this->bootRoutePatterns();
-        $this->bootEvents();
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
+     * Register any package services.
      */
     public function register(): void
     {
-        $this->registerRouteMacro();
+        $this->registerProviders();
+        $this->registerRouteMacros();
         $this->registerContainerBindings();
     }
 
     /**
-     * Boot the route locale pattern.
+     * Register any package providers.
      */
-    private function bootRoutePatterns(): void
+    private function registerProviders(): void
     {
-        Route::pattern('locale', $this->getLocalePattern());
+        $this->app->register(Providers\EventServiceProvider::class);
+        $this->app->register(Providers\RouteServiceProvider::class);
+    }
+
+    /**
+     * Register any route macros.
+     */
+    private function registerRouteMacros(): void
+    {
+        $pattern = $this->getLocalePattern();
+
+        Route::macro('locale', function ($routes) use ($pattern) {
+            Route::prefix('{locale}')->where(['locale' => $pattern])->group($routes);
+        });
     }
 
     /**
@@ -58,35 +46,11 @@ class LocalizationRouterServiceProvider extends ServiceProvider
      */
     private function getLocalePattern(): string
     {
-        $default = $this->app[Repositories\Repository::class]->getDefault();
-
-        $locales = config('app.locales', [$default]);
-
-        return '(' . implode('|', $locales) . ')';
+        return '(' . implode('|', config('app.locales')) . ')';
     }
 
     /**
-     * Boot the package events.
-     */
-    private function bootEvents(): void
-    {
-        foreach ($this->listen as $event => $listener) {
-            $this->app['events']->listen($event, $listener);
-        }
-    }
-
-    /**
-     * Register the route macro.
-     */
-    private function registerRouteMacro(): void
-    {
-        Route::macro('locale', function ($routes) {
-            Route::prefix('{locale}')->group($routes);
-        });
-    }
-
-    /**
-     * Register the container bindings.
+     * Register any container bindings.
      */
     private function registerContainerBindings(): void
     {
@@ -94,10 +58,10 @@ class LocalizationRouterServiceProvider extends ServiceProvider
             ->needs('$locales')
             ->give($this->app['config']['app']['locales']);
 
-        $this->app->when(Repositories\SessionRepository::class)
+        $this->app->when(Repositories\UserSessionLocaleRepository::class)
             ->needs('$defaultLocale')
             ->give($this->app['config']['app']['fallback_locale']);
 
-        $this->app->bind(Repositories\Repository::class, Repositories\SessionRepository::class);
+        $this->app->bind(Repositories\UserLocaleRepository::class, Repositories\UserSessionLocaleRepository::class);
     }
 }
