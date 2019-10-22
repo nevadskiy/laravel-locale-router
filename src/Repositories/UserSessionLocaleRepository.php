@@ -4,7 +4,7 @@ namespace Nevadskiy\LocalizationRouter\Repositories;
 
 use Illuminate\Contracts\Session\Session;
 
-class SessionRepository implements Repository
+class UserSessionLocaleRepository implements UserLocaleRepository
 {
     /**
      * @var Session

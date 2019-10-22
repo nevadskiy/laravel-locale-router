@@ -2,7 +2,7 @@
 
 namespace Nevadskiy\LocalizationRouter\Repositories;
 
-interface Repository
+interface UserLocaleRepository
 {
     /**
      * Set the locale to the repository.
