@@ -105,12 +105,12 @@ class LocaleUrl
     public function isCorrect(string $url): bool
     {
         try {
-            app('router')->getRoutes()->match(Request::create($url));
+            $route = app('router')->getRoutes()->match(Request::create($url));
         } catch (NotFoundHttpException $e) {
             return false;
         }
 
-        return true;
+        return ! $route->isFallback;
     }
 
     /**
