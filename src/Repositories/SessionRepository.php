@@ -28,18 +28,23 @@ class SessionRepository implements Repository
         $this->defaultLocale = $defaultLocale;
     }
 
+    /**
+     * Set the locale to the repository.
+     *
+     * @param string $locale
+     */
     public function set(string $locale): void
     {
         $this->session->put('locale', $locale);
     }
 
+    /**
+     * Get the locale from the repository.
+     *
+     * @return string
+     */
     public function get(): string
     {
         return $this->session->get('locale', $this->defaultLocale);
-    }
-
-    public function getDefault(): string
-    {
-        return $this->defaultLocale;
     }
 }
