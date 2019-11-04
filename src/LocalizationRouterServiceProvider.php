@@ -23,6 +23,7 @@ class LocalizationRouterServiceProvider extends ServiceProvider
      */
     private function registerProviders(): void
     {
+        // TODO: refactor without providers...
         $this->app->register(Providers\EventServiceProvider::class);
         $this->app->register(Providers\RouteServiceProvider::class);
     }
