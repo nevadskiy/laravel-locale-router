@@ -35,7 +35,6 @@ class FallbackController extends Controller
     }
 
     /**
-     * Single-action controller.
      * It uses for web middleware loading and allow to use session, authentication and others useful data.
      *
      * @param Request $request
@@ -43,16 +42,14 @@ class FallbackController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $locale = $this->pullLocale();
-
         if ($this->localeUrl->isCorrectRequestLocale($request)) {
-            $this->defaultFallback();
+            throw new NotFoundHttpException;
         }
 
-        $url = $this->localeUrl->prependLocale($locale, $request);
+        $url = $this->localeUrl->prependLocale($this->pullLocale(), $request);
 
         if (! $this->localeUrl->isCorrect($url)) {
-            $this->defaultFallback();
+            throw new NotFoundHttpException;
         }
 
         return $this->redirectToLocaleUrl($url);
@@ -73,14 +70,6 @@ class FallbackController extends Controller
     }
 
     /**
-     * Default fallback action.
-     */
-    private function defaultFallback(): void
-    {
-        throw new NotFoundHttpException;
-    }
-
-    /**
      * Redirect to the locale URL.
      *
      * @param string $url
@@ -88,6 +77,6 @@ class FallbackController extends Controller
      */
     private function redirectToLocaleUrl(string $url): RedirectResponse
     {
-        return redirect()->to($url, Response::HTTP_FOUND, ['Vary' => 'Accept-Language']);
+        return redirect()->to($url, Response::HTTP_MOVED_PERMANENTLY, ['Vary' => 'Accept-Language']);
     }
 }
