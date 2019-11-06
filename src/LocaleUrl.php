@@ -51,14 +51,15 @@ class LocaleUrl
     /**
      * Get preferred locale from the request.
      *
+     * @param array $extendedLocales
      * @param Request|null $request
      * @return string|null
      */
-    public function getPreferred(Request $request = null): ?string
+    public function getPreferred(array $extendedLocales = [], Request $request = null): ?string
     {
         $request = $request ?: $this->request;
 
-        return $request->getPreferredLanguage($this->locales);
+        return $request->getPreferredLanguage(array_merge($extendedLocales, $this->locales));
     }
 
     /**
