@@ -63,6 +63,6 @@ class LocalizationRouterServiceProvider extends ServiceProvider
             ->needs('$defaultLocale')
             ->give($this->app['config']['app']['fallback_locale']);
 
-        $this->app->bind(Repositories\UserLocaleRepository::class, Repositories\UserSessionLocaleRepository::class);
+        $this->app->bindIf(Repositories\UserLocaleRepository::class, Repositories\UserSessionLocaleRepository::class);
     }
 }
