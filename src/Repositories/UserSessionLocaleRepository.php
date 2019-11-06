@@ -3,6 +3,7 @@
 namespace Nevadskiy\LocalizationRouter\Repositories;
 
 use Illuminate\Contracts\Session\Session;
+use Nevadskiy\LocalizationRouter\LocaleUrl;
 
 class UserSessionLocaleRepository implements UserLocaleRepository
 {
@@ -10,6 +11,11 @@ class UserSessionLocaleRepository implements UserLocaleRepository
      * @var Session
      */
     private $session;
+
+    /**
+     * @var LocaleUrl
+     */
+    private $localeUrl;
 
     /**
      * @var string
@@ -20,11 +26,13 @@ class UserSessionLocaleRepository implements UserLocaleRepository
      * SessionRepository constructor.
      *
      * @param Session $session
+     * @param LocaleUrl $localeUrl
      * @param string $defaultLocale
      */
-    public function __construct(Session $session, string $defaultLocale)
+    public function __construct(Session $session, LocaleUrl $localeUrl, string $defaultLocale)
     {
         $this->session = $session;
+        $this->localeUrl = $localeUrl;
         $this->defaultLocale = $defaultLocale;
     }
 
@@ -45,6 +53,16 @@ class UserSessionLocaleRepository implements UserLocaleRepository
      */
     public function get(): string
     {
-        return $this->session->get('locale', $this->defaultLocale);
+        return $this->session->get('locale', $this->getFallback());
+    }
+
+    /**
+     * Get the fallback locale.
+     *
+     * @return string
+     */
+    private function getFallback(): string
+    {
+        return $this->localeUrl->getPreferred() ?: $this->defaultLocale;
     }
 }

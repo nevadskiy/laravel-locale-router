@@ -4,6 +4,7 @@ namespace Nevadskiy\LocalizationRouter;
 
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LocaleUrl
@@ -38,13 +39,26 @@ class LocaleUrl
     }
 
     /**
-     * Get possible locales.
+     * Get available locales.
      *
      * @return array
      */
     public function getLocales(): array
     {
         return $this->locales;
+    }
+
+    /**
+     * Get preferred locale from the request.
+     *
+     * @param Request|null $request
+     * @return string|null
+     */
+    public function getPreferred(Request $request = null): ?string
+    {
+        $request = $request ?: $this->request;
+
+        return $request->getPreferredLanguage($this->locales);
     }
 
     /**
@@ -59,7 +73,7 @@ class LocaleUrl
 
         $previousRequest = Request::create($previous);
 
-        if (! $this->isCorrectRequestLocale($previousRequest)) {
+        if (! $this->hasCorrectRequestLocale($previousRequest)) {
             return $previous;
         }
 
@@ -67,23 +81,7 @@ class LocaleUrl
     }
 
     /**
-     * Replace locale in the request URL.
-     *
-     * @param string $locale
-     * @param Request $request
-     * @return string
-     */
-    public function replaceUrlLocale(string $locale, Request $request = null): string
-    {
-        $request = $request ?: $this->request;
-
-        $uri =  preg_replace("/{$request->segment(1)}/", $locale, $request->getRequestUri(), 1);
-
-        return $this->generator->to($uri);
-    }
-
-    /**
-     * Prepend locale to the request URL.
+     * Prepend the locale to the request URL.
      *
      * @param string $locale
      * @param Request|null $request
@@ -91,13 +89,15 @@ class LocaleUrl
      */
     public function prependLocale(string $locale, Request $request = null): string
     {
+        $this->guardInvalidLocale($locale);
+
         $request = $request ?: $this->request;
 
         return $this->generator->to("{$locale}{$request->getRequestUri()}");
     }
 
     /**
-     * Determine if the request URL is correct.
+     * Determine if the request URL has matched any application route.
      *
      * @param string $url
      * @return bool
@@ -110,7 +110,11 @@ class LocaleUrl
             return false;
         }
 
-        return ! $route->isFallback;
+        if ($route->isFallback) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -119,7 +123,7 @@ class LocaleUrl
      * @param Request|null $request
      * @return bool
      */
-    public function isCorrectRequestLocale(Request $request = null): bool
+    public function hasCorrectRequestLocale(Request $request = null): bool
     {
         $request = $request ?: $this->request;
 
@@ -129,12 +133,40 @@ class LocaleUrl
     }
 
     /**
+     * Replace locale in the request URL.
+     *
+     * @param string $locale
+     * @param Request $request
+     * @return string
+     */
+    private function replaceUrlLocale(string $locale, Request $request = null): string
+    {
+        $request = $request ?: $this->request;
+
+        $uri =  preg_replace("/{$request->segment(1)}/", $locale, $request->getRequestUri(), 1);
+
+        return $this->generator->to($uri);
+    }
+
+    /**
+     * Guard against an invalid application locale.
+     *
+     * @param string $locale
+     */
+    private function guardInvalidLocale(string $locale): void
+    {
+        if (!$this->isCorrectLocale($locale)) {
+            throw new InvalidArgumentException("The locale '{$locale}' is not available in the app.");
+        }
+    }
+
+    /**
      * Determine if the locale is correct.
      *
      * @param string $locale
      * @return bool
      */
-    public function isCorrectLocale(string $locale): bool
+    private function isCorrectLocale(string $locale): bool
     {
         return \in_array($locale, $this->locales, true);
     }

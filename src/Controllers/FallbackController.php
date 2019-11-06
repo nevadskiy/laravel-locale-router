@@ -42,7 +42,7 @@ class FallbackController extends Controller
      */
     public function __invoke(Request $request)
     {
-        if ($this->localeUrl->isCorrectRequestLocale($request)) {
+        if ($this->localeUrl->hasCorrectRequestLocale($request)) {
             throw new NotFoundHttpException;
         }
 
