@@ -77,6 +77,6 @@ class FallbackController extends Controller
      */
     private function redirectToLocaleUrl(string $url): RedirectResponse
     {
-        return redirect()->to($url, Response::HTTP_MOVED_PERMANENTLY, ['Vary' => 'Accept-Language']);
+        return redirect()->to($url, Response::HTTP_FOUND, ['Vary' => 'Accept-Language']);
     }
 }
