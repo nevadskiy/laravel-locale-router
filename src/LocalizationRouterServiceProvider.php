@@ -4,6 +4,7 @@ namespace Nevadskiy\LocalizationRouter;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Nevadskiy\LocalizationRouter\Middleware\SetLocaleMiddleware;
 use Nevadskiy\LocalizationRouter\Providers;
 
 class LocalizationRouterServiceProvider extends ServiceProvider
@@ -36,7 +37,10 @@ class LocalizationRouterServiceProvider extends ServiceProvider
         $pattern = $this->getLocalePattern();
 
         Route::macro('locale', function ($routes) use ($pattern) {
-            Route::prefix('{locale}')->where(['locale' => $pattern])->group($routes);
+            Route::prefix('{locale}')
+                ->middleware(SetLocaleMiddleware::class)
+                ->where(['locale' => $pattern])
+                ->group($routes);
         });
     }
 
