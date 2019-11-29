@@ -36,6 +36,9 @@ class LocalizationRouterServiceProvider extends ServiceProvider
     {
         $pattern = $this->getLocalePattern();
 
+        // TODO: add locale route to AppServiceProvider view composer share and check if it triggers before Route::matched()
+        // TODO need to set url()->setDefault() FOR ALL ROUTES not only where Route::locale() is called.
+
         Route::macro('locale', function ($routes) use ($pattern) {
             Route::prefix('{locale}')
                 ->middleware(SetLocaleMiddleware::class)
