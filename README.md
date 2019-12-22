@@ -93,3 +93,4 @@ protected $middlewarePriority = [
 
 #### TODO:
 - add config for package and extract all depended parameters into it
+- add possibility to specify locales list to the specific group of routes (e.g. add additional locales for admin panel)
