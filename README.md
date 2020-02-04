@@ -92,5 +92,10 @@ protected $middlewarePriority = [
 
 
 #### TODO:
-- add config for package and extract all depended parameters into it
-- add possibility to specify locales list to the specific group of routes (e.g. add additional locales for admin panel)
+- [ ] add config for package and extract all depended parameters into it
+- [ ] add possibility to specify locales list to the specific group of routes (e.g. add additional locales for admin panel)
+- [ ] add locale route to AppServiceProvider view composer share and check if it triggers before Route::matched()
+- [ ] need to set url()->setDefault() FOR ALL ROUTES not only where Route::locale() is called.
+- [ ] add default repository (which do not store language at all)
+- [ ] add session repository (which store language in the session)
+- [ ] add cookie repository (which store language in the cookie)
