@@ -3,6 +3,7 @@
 namespace Nevadskiy\LocalizationRouter;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Foundation\Events\LocaleUpdated;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,7 @@ class LocalizationRouterServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->setDefaultLocale();
         $this->bootEvents();
         $this->bootRoutes();
     }
@@ -81,6 +83,14 @@ class LocalizationRouterServiceProvider extends ServiceProvider
             ->give($this->app['config']['app']['fallback_locale']);
 
         $this->app->bindIf(Repositories\UserLocaleRepository::class, Repositories\UserSessionLocaleRepository::class);
+    }
+
+    /**
+     * Set default locale.
+     */
+    private function setDefaultLocale(): void
+    {
+        $this->app[UrlGenerator::class]->defaults(['locale' => $this->app->getLocale()]);
     }
 
     /**
