@@ -2,6 +2,8 @@
 
 namespace Nevadskiy\LocalizationRouter;
 
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Foundation\Events\LocaleUpdated;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Nevadskiy\LocalizationRouter\Middleware\SetLocaleMiddleware;
@@ -9,6 +11,18 @@ use Nevadskiy\LocalizationRouter\Providers;
 
 class LocalizationRouterServiceProvider extends ServiceProvider
 {
+    /**
+     * The event listener mappings for the application.
+     *
+     * @var array
+     */
+    protected $listen = [
+        LocaleUpdated::class => [
+            Listeners\SwitchRouterLocale::class,
+            Listeners\RememberLocale::class,
+        ],
+    ];
+
     /**
      * Register any package services.
      */
@@ -19,13 +33,17 @@ class LocalizationRouterServiceProvider extends ServiceProvider
         $this->registerContainerBindings();
     }
 
+    public function boot(): void
+    {
+        $this->bootEvents();
+    }
+
     /**
      * Register any package providers.
      */
     private function registerProviders(): void
     {
         // TODO: refactor without providers...
-        $this->app->register(Providers\EventServiceProvider::class);
         $this->app->register(Providers\RouteServiceProvider::class);
     }
 
@@ -35,13 +53,6 @@ class LocalizationRouterServiceProvider extends ServiceProvider
     private function registerRouteMacros(): void
     {
         $pattern = $this->getLocalePattern();
-
-        // TODO: add locale route to AppServiceProvider view composer share and check if it triggers before Route::matched()
-        // TODO need to set url()->setDefault() FOR ALL ROUTES not only where Route::locale() is called.
-
-        // TODO add default repository (which do not store language at all)
-        // TODO add session repository (which store language in the session)
-        // TODO add cookie repository (which store language in the cookie)
 
         Route::macro('locale', function ($routes) use ($pattern) {
             Route::prefix('{locale}')
@@ -75,5 +86,29 @@ class LocalizationRouterServiceProvider extends ServiceProvider
             ->give($this->app['config']['app']['fallback_locale']);
 
         $this->app->bindIf(Repositories\UserLocaleRepository::class, Repositories\UserSessionLocaleRepository::class);
+    }
+
+    /**
+     * Boot any application events.
+     */
+    private function bootEvents(): void
+    {
+        $dispatcher = $this->resolveEventDispatcher();
+
+        foreach ($this->listen as $event => $listeners) {
+            foreach (array_unique($listeners) as $listener) {
+                $dispatcher->listen($event, $listener);
+            }
+        }
+    }
+
+    /**
+     * Resolve an event dispatcher.
+     *
+     * @return Dispatcher
+     */
+    private function resolveEventDispatcher(): Dispatcher
+    {
+        return $this->app[Dispatcher::class];
     }
 }
