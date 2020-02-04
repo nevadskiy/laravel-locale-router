@@ -33,6 +33,9 @@ class LocalizationRouterServiceProvider extends ServiceProvider
         $this->registerContainerBindings();
     }
 
+    /**
+     * Boot any package services.
+     */
     public function boot(): void
     {
         $this->bootEvents();
