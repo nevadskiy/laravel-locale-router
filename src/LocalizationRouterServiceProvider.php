@@ -4,10 +4,11 @@ namespace Nevadskiy\LocalizationRouter;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Events\LocaleUpdated;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Nevadskiy\LocalizationRouter\Controllers\FallbackController;
 use Nevadskiy\LocalizationRouter\Middleware\SetLocaleMiddleware;
-use Nevadskiy\LocalizationRouter\Providers;
 
 class LocalizationRouterServiceProvider extends ServiceProvider
 {
@@ -28,7 +29,6 @@ class LocalizationRouterServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->registerProviders();
         $this->registerRouteMacros();
         $this->registerContainerBindings();
     }
@@ -39,15 +39,7 @@ class LocalizationRouterServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->bootEvents();
-    }
-
-    /**
-     * Register any package providers.
-     */
-    private function registerProviders(): void
-    {
-        // TODO: refactor without providers...
-        $this->app->register(Providers\RouteServiceProvider::class);
+        $this->bootRoutes();
     }
 
     /**
@@ -72,7 +64,7 @@ class LocalizationRouterServiceProvider extends ServiceProvider
      */
     private function getLocalePattern(): string
     {
-        return '(' . implode('|', config('app.locales')) . ')';
+        return '(' . implode('|', $this->app['config']['app']['locales']) . ')';
     }
 
     /**
@@ -113,5 +105,33 @@ class LocalizationRouterServiceProvider extends ServiceProvider
     private function resolveEventDispatcher(): Dispatcher
     {
         return $this->app[Dispatcher::class];
+    }
+
+    /**
+     * Boot any application routes.
+     */
+    private function bootRoutes(): void
+    {
+        if ($this->app->routesAreCached()) {
+            return;
+        }
+
+        $router = $this->resolveRouter();
+
+        $router->group([
+            'middleware' => 'web',
+        ], function () use ($router) {
+            $router->fallback(FallbackController::class);
+        });
+    }
+
+    /**
+     * Resolve a router.
+     *
+     * @return Router
+     */
+    private function resolveRouter(): Router
+    {
+        return $this->app['router'];
     }
 }
