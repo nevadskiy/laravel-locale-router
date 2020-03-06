@@ -27,13 +27,13 @@ It triggers ```Illuminate\Foundation\Events\LocaleUpdated``` event, which is aut
 
 
 # Installation
-Register the LocalizationRouterServiceProvider in the ```config/app.php``` as the very **last provider**.
+Register the LocalizeRouterServiceProvider in the ```config/app.php``` as the very **last provider**.
 It should be placed after all possible routes because it uses ```Route::fallback()``` to intercept not found routes.
 ```
 'providers' => [
     // Other providers...
 
-    Nevadskiy\LocalizationRouter\LocalizationRouterServiceProvider::class,
+    Nevadskiy\LocalizeRouter\LocalizeRouterServiceProvider::class,
 ]
 ```
 
@@ -55,7 +55,7 @@ Add locales array to your config/app.php with your supported locales.
     'locales' => ['en', 'es, 'it', 'de', 'ru'],
 ```
 
-Put the middleware ```Nevadskiy\LocalizationRouter\Middleware\SetLocaleMiddleware``` to your web middleware group in the ```app/Http/Kernel.php``` file.
+Put the middleware ```Nevadskiy\LocalizeRouter\Middleware\SetLocaleMiddleware``` to your web middleware group in the ```app/Http/Kernel.php``` file.
 ```
 /**
  * The application's route middleware groups.
@@ -65,7 +65,7 @@ Put the middleware ```Nevadskiy\LocalizationRouter\Middleware\SetLocaleMiddlewar
 protected $middlewareGroups = [
     'web' => [
         // app middlewares...
-        \Nevadskiy\LocalizationRouter\Middleware\SetLocaleMiddleware::class,
+        \Nevadskiy\LocalizeRouter\Middleware\SetLocaleMiddleware::class,
     ],
 ];
 ```
@@ -84,7 +84,7 @@ protected $middlewarePriority = [
     \Illuminate\View\Middleware\ShareErrorsFromSession::class,
     \Illuminate\Auth\Middleware\Authenticate::class,
     \Illuminate\Session\Middleware\AuthenticateSession::class,
-    \Nevadskiy\LocalizationRouter\Middleware\SetLocaleMiddleware::class,
+    \Nevadskiy\LocalizeRouter\Middleware\SetLocaleMiddleware::class,
     \Illuminate\Routing\Middleware\SubstituteBindings::class,
     \Illuminate\Auth\Middleware\Authorize::class,
 ];

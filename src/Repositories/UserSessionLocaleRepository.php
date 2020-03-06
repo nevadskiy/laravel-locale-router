@@ -1,9 +1,9 @@
 <?php
 
-namespace Nevadskiy\LocalizationRouter\Repositories;
+namespace Nevadskiy\LocalizeRouter\Repositories;
 
 use Illuminate\Contracts\Session\Session;
-use Nevadskiy\LocalizationRouter\LocaleUrl;
+use Nevadskiy\LocalizeRouter\LocaleUrl;
 
 class UserSessionLocaleRepository implements UserLocaleRepository
 {
