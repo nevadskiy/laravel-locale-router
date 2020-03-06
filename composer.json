@@ -1,8 +1,8 @@
 {
-    "name": "nevadskiy/localization-router",
+    "name": "nevadskiy/localize-router",
     "require": {
         "php": "^7.2",
-        "laravel/framework": "~5.8.0|^6.0"
+        "laravel/framework": "~5.8.0|^6.0|^7.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0",
@@ -11,7 +11,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Nevadskiy\\LocalizationRouter\\": "src/"
+            "Nevadskiy\\LocalizeRouter\\": "src/"
         }
     }
 }
