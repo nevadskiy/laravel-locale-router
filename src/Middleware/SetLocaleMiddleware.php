@@ -45,14 +45,14 @@ class SetLocaleMiddleware
     }
 
     /**
-     * Get the locale from the route.
+     * Get the locale from the route or the repository.
      *
      * @param Route $route
      * @return string
      */
     private function getRouteLocale(Route $route): string
     {
-        return $route->parameter('locale');
+        return $route->parameter('locale') ?: $this->repository->get();
     }
 
     /**
