@@ -1,11 +1,11 @@
 <?php
 
-namespace Nevadskiy\LocalizeRouter\Middleware;
+namespace Nevadskiy\LocalizeRoutes\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
-use Nevadskiy\LocalizeRouter\Repositories\UserLocaleRepository;
+use Nevadskiy\LocalizeRoutes\Repositories\UserLocaleRepository;
 
 class SetLocaleMiddleware
 {
@@ -45,14 +45,14 @@ class SetLocaleMiddleware
     }
 
     /**
-     * Get the locale from the route or the locale repository.
+     * Get the locale from the route.
      *
      * @param Route $route
      * @return string
      */
     private function getRouteLocale(Route $route): string
     {
-        return $route->parameter('locale') ?: $this->repository->get();
+        return $route->parameter('locale');
     }
 
     /**

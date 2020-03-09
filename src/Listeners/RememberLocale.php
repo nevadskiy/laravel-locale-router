@@ -1,9 +1,9 @@
 <?php
 
-namespace Nevadskiy\LocalizeRouter\Listeners;
+namespace Nevadskiy\LocalizeRoutes\Listeners;
 
 use Illuminate\Foundation\Events\LocaleUpdated;
-use Nevadskiy\LocalizeRouter\Repositories\UserLocaleRepository;
+use Nevadskiy\LocalizeRoutes\Repositories\UserLocaleRepository;
 
 class RememberLocale
 {

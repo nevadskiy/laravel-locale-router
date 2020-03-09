@@ -1,13 +1,13 @@
 <?php
 
-namespace Nevadskiy\LocalizeRouter\Controllers;
+namespace Nevadskiy\LocalizeRoutes\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Nevadskiy\LocalizeRouter\LocaleUrl;
-use Nevadskiy\LocalizeRouter\Repositories\UserLocaleRepository;
+use Nevadskiy\LocalizeRoutes\LocaleUrl;
+use Nevadskiy\LocalizeRoutes\Repositories\UserLocaleRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FallbackController extends Controller

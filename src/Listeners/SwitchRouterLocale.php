@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\LocalizeRouter\Listeners;
+namespace Nevadskiy\LocalizeRoutes\Listeners;
 
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Foundation\Events\LocaleUpdated;
