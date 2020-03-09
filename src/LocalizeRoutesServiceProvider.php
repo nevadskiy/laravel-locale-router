@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\LocalizeRouter;
+namespace Nevadskiy\LocalizeRoutes;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Routing\UrlGenerator;
@@ -8,10 +8,10 @@ use Illuminate\Foundation\Events\LocaleUpdated;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Nevadskiy\LocalizeRouter\Controllers\FallbackController;
-use Nevadskiy\LocalizeRouter\Middleware\SetLocaleMiddleware;
+use Nevadskiy\LocalizeRoutes\Controllers\FallbackController;
+use Nevadskiy\LocalizeRoutes\Middleware\SetLocaleMiddleware;
 
-class LocalizeRouterServiceProvider extends ServiceProvider
+class LocalizeRoutesServiceProvider extends ServiceProvider
 {
     /**
      * The event listener mappings for the application.
@@ -91,6 +91,10 @@ class LocalizeRouterServiceProvider extends ServiceProvider
     private function setDefaultLocale(): void
     {
         $this->app[UrlGenerator::class]->defaults(['locale' => $this->app->getLocale()]);
+
+        $this->app->rebinding(UrlGenerator::class, function ($url) {
+            $url->defaults(['locale' => $this->app->getLocale()]);
+        });
     }
 
     /**
