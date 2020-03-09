@@ -90,10 +90,10 @@ class LocalizeRoutesServiceProvider extends ServiceProvider
      */
     private function setDefaultLocale(): void
     {
-        $this->app[UrlGenerator::class]->defaults(['locale' => $this->app->getLocale()]);
+        $this->app['url']->defaults(['locale' => $this->app->getLocale()]);
 
-        $this->app->rebinding(UrlGenerator::class, function ($url) {
-            $url->defaults(['locale' => $this->app->getLocale()]);
+        $this->app->rebinding('request', function () {
+            $this->app['url']->defaults(['locale' => $this->app->getLocale()]);
         });
     }
 
