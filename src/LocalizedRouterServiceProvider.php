@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\LocalizeRoutes;
+namespace Nevadskiy\LocalizedRouter;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Routing\UrlGenerator;
@@ -8,10 +8,10 @@ use Illuminate\Foundation\Events\LocaleUpdated;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Nevadskiy\LocalizeRoutes\Controllers\FallbackController;
-use Nevadskiy\LocalizeRoutes\Middleware\SetLocaleMiddleware;
+use Nevadskiy\LocalizedRouter\Controllers\FallbackController;
+use Nevadskiy\LocalizedRouter\Middleware\SetLocaleMiddleware;
 
-class LocalizeRoutesServiceProvider extends ServiceProvider
+class LocalizedRouterServiceProvider extends ServiceProvider
 {
     /**
      * The event listener mappings for the application.

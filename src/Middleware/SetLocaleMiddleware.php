@@ -1,11 +1,11 @@
 <?php
 
-namespace Nevadskiy\LocalizeRoutes\Middleware;
+namespace Nevadskiy\LocalizedRouter\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
-use Nevadskiy\LocalizeRoutes\Repositories\UserLocaleRepository;
+use Nevadskiy\LocalizedRouter\Repositories\UserLocaleRepository;
 
 class SetLocaleMiddleware
 {

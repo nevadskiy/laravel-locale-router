@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\LocalizeRoutes\Repositories;
+namespace Nevadskiy\LocalizedRouter\Repositories;
 
 interface UserLocaleRepository
 {

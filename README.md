@@ -1,3 +1,5 @@
+Simple localization support for Laravel routes 
+
 # Features
 - SEO-friendly urls
 - Redirects for non-localed routes
@@ -27,13 +29,13 @@ It triggers ```Illuminate\Foundation\Events\LocaleUpdated``` event, which is aut
 
 
 # Installation
-Register the LocalizeRoutesServiceProvider in the ```config/app.php``` as the very **last provider**.
+Register the LocalizedRouterServiceProvider in the ```config/app.php``` as the very **last provider**.
 It should be placed after all possible routes because it uses ```Route::fallback()``` to intercept not found routes.
 ```
 'providers' => [
     // Other providers...
 
-    Nevadskiy\LocalizeRoutes\LocalizeRoutesServiceProvider::class,
+    Nevadskiy\LocalizedRouter\LocalizedRouterServiceProvider::class,
 ]
 ```
 
@@ -55,7 +57,7 @@ Add locales array to your config/app.php with your supported locales.
     'locales' => ['en', 'es, 'it', 'de', 'ru'],
 ```
 
-Put the middleware ```Nevadskiy\LocalizeRoutes\Middleware\SetLocaleMiddleware``` to your web middleware group in the ```app/Http/Kernel.php``` file.
+Put the middleware ```Nevadskiy\LocalizedRouter\Middleware\SetLocaleMiddleware``` to your web middleware group in the ```app/Http/Kernel.php``` file.
 ```
 /**
  * The application's route middleware groups.
@@ -65,7 +67,7 @@ Put the middleware ```Nevadskiy\LocalizeRoutes\Middleware\SetLocaleMiddleware```
 protected $middlewareGroups = [
     'web' => [
         // app middlewares...
-        \Nevadskiy\LocalizeRoutes\Middleware\SetLocaleMiddleware::class,
+        \Nevadskiy\LocalizedRouter\Middleware\SetLocaleMiddleware::class,
     ],
 ];
 ```
@@ -84,7 +86,7 @@ protected $middlewarePriority = [
     \Illuminate\View\Middleware\ShareErrorsFromSession::class,
     \Illuminate\Auth\Middleware\Authenticate::class,
     \Illuminate\Session\Middleware\AuthenticateSession::class,
-    \Nevadskiy\LocalizeRoutes\Middleware\SetLocaleMiddleware::class,
+    \Nevadskiy\LocalizedRouter\Middleware\SetLocaleMiddleware::class,
     \Illuminate\Routing\Middleware\SubstituteBindings::class,
     \Illuminate\Auth\Middleware\Authorize::class,
 ];
@@ -92,10 +94,6 @@ protected $middlewarePriority = [
 
 
 #### TODO:
-- [x] [FIX] add locale route to AppServiceProvider view composer share and check if it triggers before Route::matched()
-- [x] [FIX] add set url()->setDefault() FOR ALL ROUTES not only where Route::locale() is called.
-- [ ] add config for package and extract all depended parameters into it
 - [ ] add possibility to specify locales list to the specific group of routes (e.g. add additional locales for admin panel)
 - [ ] add default repository (which do not store language at all)
-- [ ] add session repository (which store language in the session)
 - [ ] add cookie repository (which store language in the cookie)

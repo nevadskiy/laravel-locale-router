@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\LocalizeRoutes;
+namespace Nevadskiy\LocalizedRouter;
 
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\Request;
