@@ -1,5 +1,5 @@
 # Image
-FROM php:7.2-cli
+FROM php:7.3-cli
 
 # Dependencies
 RUN apt-get update
